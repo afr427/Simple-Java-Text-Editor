@@ -39,6 +39,7 @@ package simplejavatexteditor;
 
 import java.lang.reflect.Method;
 import javax.swing.*;
+import java.io.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -691,6 +692,18 @@ public class UI extends JFrame implements ActionListener {
         @Override
         public void dropActionChanged(DropTargetDragEvent e) {
         }
+        
+        public void autoSave(JTextArea textArea) {
+            Timer timer = new Timer(30000, e -> { // Timer set to autosave every 30 seconds
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("autosave.txt"))) {
+                    writer.write(textArea.getText());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+            timer.start();
+        }
+        
     };
 
 }

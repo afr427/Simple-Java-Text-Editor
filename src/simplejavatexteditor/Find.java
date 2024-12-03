@@ -34,16 +34,19 @@ package simplejavatexteditor;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Find extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = 1L;
     int startIndex=0;
-        int select_start=-1;
+    int select_start=-1;
     JLabel lab1, lab2;
     JTextField textF, textR;
     JButton findBtn, findNext, replace, replaceAll, cancel;
     private JTextArea txt;
+    private JCheckBox regexCheckBox;
 
     public Find(JTextArea text) {
         this.txt = text;
@@ -57,6 +60,8 @@ public class Find extends JFrame implements ActionListener {
         replace = new JButton("Replace");
         replaceAll = new JButton("Replace All");
         cancel = new JButton("Cancel");
+        
+        regexCheckBox = new JCheckBox("Use Regular Expressions");
 
         // Set Layout NULL
         setLayout(null);
@@ -95,7 +100,10 @@ public class Find extends JFrame implements ActionListener {
         cancel.setBounds(225, 94, 115, 20);
         add(cancel);
         cancel.addActionListener(this);
-
+        
+        regexCheckBox.setBounds(20, 80, 200, labHeight);
+        
+        add(regexCheckBox);
 
         // Set the width and height of the window
         int width = 360;
@@ -111,6 +119,38 @@ public class Find extends JFrame implements ActionListener {
     }
 
     public void find() {
+    	
+        String searchText = textF.getText();
+        
+        if (regexCheckBox.isSelected()) {
+        	
+            try {
+            	
+                Pattern pattern = Pattern.compile(searchText);
+                Matcher matcher = pattern.matcher(txt.getText());
+
+                if (matcher.find(startIndex)) {
+                	
+                    select_start = matcher.start();
+                    int select_end = matcher.end();
+                    txt.select(select_start, select_end);
+                    startIndex = select_end;
+                    
+                } else {
+                	
+                    startIndex = 0;
+                    JOptionPane.showMessageDialog(null, "Could not find \"" + searchText + "\"!");
+                    
+                }
+                
+            } catch (Exception e) {
+            	
+                JOptionPane.showMessageDialog(null, "Invalid regular expression: " + e.getMessage());
+                
+            }
+            return; 
+        }
+    	
         select_start = txt.getText().indexOf(textF.getText().toLowerCase());
         if(select_start == -1)
         {
@@ -145,20 +185,53 @@ public class Find extends JFrame implements ActionListener {
                 textF.setText(selection);
             }
         }
-        try
-        {
-            int select_start = txt.getText() .indexOf(selection , startIndex);
-            int select_end = select_start+selection.length();
-            txt.select(select_start, select_end);
-            startIndex = select_end+1;
+        
+        if (regexCheckBox.isSelected()) {
+        	
+            try {
+            	
+                Pattern pattern = Pattern.compile(selection);
+                Matcher matcher = pattern.matcher(txt.getText());
 
-            if(select_start == txt.getText().lastIndexOf(selection.toLowerCase()))
-            {
-                startIndex = 0;
+                if (matcher.find(startIndex)) {
+                	
+                    select_start = matcher.start();
+                    int select_end = matcher.end();
+                    txt.select(select_start, select_end);
+                    startIndex = select_end;
+                    
+                } else {
+                	
+                    startIndex = 0;
+                    JOptionPane.showMessageDialog(null,"Could not find \"" + selection + "\"!");
+                    
+                }
+                
+            } catch (Exception e) {
+            	
+                JOptionPane.showMessageDialog(null,"Invalid regular expression: " + e.getMessage());
+                
             }
+            
+            return;
+            
         }
-        catch(NullPointerException e)
-        {}
+        
+        int select_start = txt.getText() .indexOf(selection , startIndex);
+        int select_end = select_start+selection.length();
+        txt.select(select_start, select_end);
+        startIndex = select_end+1;
+        
+//        try
+//        {
+
+//            if(select_start == txt.getText().lastIndexOf(selection.toLowerCase()))
+//            {
+//                startIndex = 0;
+//            }
+//        }
+//        catch(NullPointerException e)
+//        {}
     }
 
     public void replace() {
@@ -175,7 +248,20 @@ public class Find extends JFrame implements ActionListener {
     }
 
     public void replaceAll() {
-        txt.setText(txt.getText().replaceAll(textF.getText() , textR.getText()));
+    	
+        String searchText = textF.getText();
+        
+        if (regexCheckBox.isSelected()) {
+        	
+            String replacedText = txt.getText().replaceAll(searchText , textR.getText());
+            txt.setText(replacedText); 
+            
+        } else {
+        	
+            txt.setText(txt.getText().replaceAll(searchText , textR.getText()));
+            
+        }
+        
     }
 
     public void actionPerformed(ActionEvent e) {

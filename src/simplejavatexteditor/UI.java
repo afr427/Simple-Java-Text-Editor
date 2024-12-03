@@ -152,8 +152,10 @@ public class UI extends JFrame implements ActionListener {
                 languageHighlighter.highLight(textArea, kw.getJavaKeywords());
             }
         });
-
+        
+        LineNumbering lineNumbers = new LineNumbering(textArea);
         JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setRowHeaderView(lineNumbers);
         textArea.setWrapStyleWord(true);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         getContentPane().setLayout(new BorderLayout()); // the BorderLayout bit makes it fill it automatically

@@ -15,6 +15,11 @@
 
 * Nice image buttons for better UX.
 
+new features
+* line numbering 
+
+*
+
 
 ![Example Java Text Editor](Screenshots/find-replace-word-in-java-text-editor.png)
 

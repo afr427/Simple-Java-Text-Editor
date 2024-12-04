@@ -57,6 +57,9 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 
 public class UI extends JFrame implements ActionListener {
 
@@ -99,7 +102,7 @@ public class UI extends JFrame implements ActionListener {
     private final ImageIcon aboutIcon = new ImageIcon(UI.class.getResource("icons/about.png"));
 
     private SupportedKeywords kw = new SupportedKeywords();
-    private HighlightText languageHighlighter = new HighlightText(Color.GRAY);
+    private HighlightText languageHighlighter = new HighlightText(Color.YELLOW);
     AutoComplete autocomplete;
     private boolean hasListener = false;
     private boolean edit = false;
@@ -134,24 +137,40 @@ public class UI extends JFrame implements ActionListener {
         /* SETTING BY DEFAULT WORD WRAP ENABLED OR TRUE */
         textArea.setLineWrap(true);
         DropTarget dropTarget = new DropTarget(textArea, dropTargetListener);
+        
+        // Set the highlight color based on category
+        languageHighlighter.setCategoryColor("classKeywords", Color.BLUE);
+        languageHighlighter.setCategoryColor("accessModifiers", Color.GREEN);
+        
 
-        // Set an higlighter to the JTextArea
+        // Set an highlighter to the JTextArea
+        textArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                highlightKeywords();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                highlightKeywords();
+            }
+
+            @Override	
+            public void changedUpdate(DocumentEvent e) {
+                highlightKeywords();
+            }
+
+        });
+        
+        
         textArea.addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyReleased(KeyEvent e) {
-                setTitle("Untitled | " + SimpleJavaTextEditor.NAME + "     [ Length: " + textArea.getText().length()
-                        + "    Lines: " + (textArea.getText() + "|").split("\n").length
-                        + "    Words: " + textArea.getText().trim().split("\\s+").length + " ]");
-            }
-
-            @Override
-            public void keyPressed(KeyEvent ke) {
-                edit = true;
-                languageHighlighter.highLight(textArea, kw.getCppKeywords());
-                languageHighlighter.highLight(textArea, kw.getJavaKeywords());
+                updateTitle();
             }
         });
+        
+        
         
         LineNumbering lineNumbers = new LineNumbering(textArea);
         JScrollPane scrollPane = new JScrollPane(textArea);
@@ -431,6 +450,20 @@ public class UI extends JFrame implements ActionListener {
                 System.exit(99);
             }
         }
+    }
+    
+    private void highlightKeywords() {
+        SwingUtilities.invokeLater(() -> {
+            languageHighlighter.removeHighlights(textArea);
+            languageHighlighter.highLight(textArea, kw.getCppKeywords());
+            languageHighlighter.highLight(textArea, kw.getJavaKeywords());
+        });
+    }
+
+    private void updateTitle() {
+        setTitle("Untitled | " + SimpleJavaTextEditor.NAME + "     [ Length: " + textArea.getText().length()
+                + "    Lines: " + (textArea.getText() + "|").split("\n").length
+                + "    Words: " + textArea.getText().trim().split("\\s+").length + " ]");
     }
 
     // Make the TextArea available to the autocomplete handler

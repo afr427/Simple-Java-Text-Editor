@@ -141,6 +141,13 @@ public class UI extends JFrame implements ActionListener {
         // Set the highlight color based on category
         languageHighlighter.setCategoryColor("classKeywords", Color.BLUE);
         languageHighlighter.setCategoryColor("accessModifiers", Color.GREEN);
+        languageHighlighter.setCategoryColor("controlFlow", Color.ORANGE);
+        languageHighlighter.setCategoryColor("exceptionHandling", Color.RED);
+        languageHighlighter.setCategoryColor("primitiveTypes", Color.MAGENTA);
+        languageHighlighter.setCategoryColor("oopKeywords", Color.CYAN);
+        languageHighlighter.setCategoryColor("modifiers", Color.PINK);
+        languageHighlighter.setCategoryColor("packageImport", Color.GRAY);
+        languageHighlighter.setCategoryColor("cppSpecific", Color.LIGHT_GRAY);
         
 
         // Set an highlighter to the JTextArea
@@ -728,6 +735,12 @@ public class UI extends JFrame implements ActionListener {
         public void dropActionChanged(DropTargetDragEvent e) {
         }
         
+        /**
+         * Sets up an automatic save feature for the given JTextArea.
+         * This method creates a timer that saves the content of the text area to a file every 30 seconds.
+         *
+         * @param textArea The JTextArea whose content will be automatically saved.
+         */
         public void autoSave(JTextArea textArea) {
             Timer timer = new Timer(30000, e -> { // Timer set to autosave every 30 seconds
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter("autosave.txt"))) {

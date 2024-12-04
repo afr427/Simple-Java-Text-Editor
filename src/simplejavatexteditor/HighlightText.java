@@ -5,19 +5,41 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The HighlightText class provides functionality to highlight text in a JTextComponent
+ * with different colors based on keyword categories.
+ */
 public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter{
 	private Map<String, Color> categoryColors = new HashMap<>();
 	private Color defaultColor;
-
+	
+	
+	/**
+     * Constructs a HighlightText object with a default color.
+     *
+     * @param defaultColor The default color to use for highlighting.
+     */
     public HighlightText(Color defaultColor) {
         super(defaultColor);
         this.defaultColor = defaultColor;
     }
     
+    /**
+     * Sets the color for a specific keyword category.
+     *
+     * @param category The category of keywords.
+     * @param color The color to use for highlighting this category.
+     */
     public void setCategoryColor(String category, Color color) {
         categoryColors.put(category, color);
     }
-
+    
+    /**
+     * Highlights the specified keywords in the given text component.
+     *
+     * @param textComp The text component to highlight.
+     * @param pattern An array of keywords to highlight.
+     */
     public void highLight(JTextComponent textComp, String[] pattern) {
         removeHighlights(textComp);
         
@@ -43,6 +65,13 @@ public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter{
 
     }
     
+    /**
+     * Determines the color for a given keyword based on its category.
+     *
+     * @param keyword The keyword to get the color for.
+     * @return The color associated with the keyword's category or the default color if keyword 
+     * is present it SupportedKeywords but not given association here
+     */
     private Color getCategoryColor(String keyword) {
     	// Class and interface keywords
         if (keyword.equals("class") || keyword.equals("interface") || keyword.equals("enum")) {
@@ -105,6 +134,14 @@ public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter{
         }
     }
     
+    /**
+     * Finds the position of a whole word in the text.
+     *
+     * @param text The text to search in.
+     * @param word The word to find.
+     * @param start The starting position for the search.
+     * @return The position of the whole word, or -1 if not found.
+     */
     private int findWholeWord(String text, String word, int start) {
         int pos = text.indexOf(word, start);
         while (pos >= 0) {

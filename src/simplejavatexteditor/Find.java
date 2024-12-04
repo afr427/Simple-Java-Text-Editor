@@ -37,6 +37,10 @@ import java.awt.event.ActionEvent;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The Find class represents a dialog window for finding and replacing text in a JTextArea.
+ * It extends JFrame and implements ActionListener to handle button events.
+ */
 public class Find extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = 1L;
@@ -117,7 +121,11 @@ public class Find extends JFrame implements ActionListener {
         setVisible(true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
-
+    
+    /**
+     * Searches for the text entered in the search field within the main text area.
+     * If regex is selected, it uses regular expression matching.
+     */
     public void find() {
     	
         String searchText = textF.getText();
@@ -165,7 +173,11 @@ public class Find extends JFrame implements ActionListener {
         int select_end = select_start + textF.getText().length();
         txt.select(select_start, select_end);
     }
-
+    
+    /**
+     * Finds the next occurrence of the search text or the selected text.
+     * If regex is selected, it uses regular expression matching.
+     */
     public void findNext() {
         String selection = txt.getSelectedText();
         try
@@ -233,6 +245,10 @@ public class Find extends JFrame implements ActionListener {
 //        catch(NullPointerException e)
 //        {}
     }
+    
+    /**
+     * Replaces the selected text with the text in the replace field.
+     */
 
     public void replace() {
         try
@@ -246,7 +262,11 @@ public class Find extends JFrame implements ActionListener {
             System.out.print("Null Pointer Exception: "+e);
         }
     }
-
+    
+    /**
+     * Replaces all occurrences of the search text with the replace text.
+     * If regex is selected, it uses regular expression replacement.
+     */
     public void replaceAll() {
     	
         String searchText = textF.getText();
@@ -263,7 +283,12 @@ public class Find extends JFrame implements ActionListener {
         }
         
     }
-
+    
+    /**
+     * Handles button click events for the find, replace, and cancel operations.
+     *
+     * @param e The action event triggered by button clicks.
+     */
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == findBtn)
         {

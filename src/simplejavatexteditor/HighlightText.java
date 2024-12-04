@@ -13,6 +13,13 @@ public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter{
 	private Map<String, Color> categoryColors = new HashMap<>();
 	private Color defaultColor;
 	
+	private Map<Color, DefaultHighlighter.DefaultHighlightPainter> painterCache = new HashMap<>();
+
+	private DefaultHighlighter.DefaultHighlightPainter getPainter(Color color) {
+	    return painterCache.computeIfAbsent(color, DefaultHighlighter.DefaultHighlightPainter::new);
+	}
+
+	
 	
 	/**
      * Constructs a HighlightText object with a default color.
@@ -52,10 +59,11 @@ public class HighlightText extends DefaultHighlighter.DefaultHighlightPainter{
                 int pos = 0;
                 Color color = getCategoryColor(keyword);
                 
+                
                 while ((pos = text.indexOf(keyword, pos)) >= 0) {
                   pos = findWholeWord(text, keyword, pos);
                     if (pos >= 0) {
-                      highlighter.addHighlight(pos, pos + keyword.length(), new DefaultHighlighter.DefaultHighlightPainter(color));
+                      highlighter.addHighlight(pos, pos + keyword.length(), getPainter(color));
                       pos += keyword.length();
                     }               
                 }

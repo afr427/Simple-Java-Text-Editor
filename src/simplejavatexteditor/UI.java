@@ -149,22 +149,28 @@ public class UI extends JFrame implements ActionListener {
         languageHighlighter.setCategoryColor("packageImport", Color.GRAY);
         languageHighlighter.setCategoryColor("cppSpecific", Color.LIGHT_GRAY);
         
+	     // Create a timer to debounce keyword highlighting. 
+	     // The timer waits for 300 milliseconds of inactivity before triggering the highlightKeywords() method.
+	     // This prevents excessive processing when the user types quickly, ensuring efficient updates.
+        Timer debounceTimer = new Timer(300, e -> highlightKeywords());
+        debounceTimer.setRepeats(false);
+        
 
         // Set an highlighter to the JTextArea
         textArea.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                highlightKeywords();
+            	debounceTimer.restart();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                highlightKeywords();
+            	debounceTimer.restart();
             }
 
             @Override	
             public void changedUpdate(DocumentEvent e) {
-                highlightKeywords();
+            	debounceTimer.restart();
             }
 
         });

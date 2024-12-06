@@ -73,7 +73,8 @@ public class UI extends JFrame implements ActionListener {
     private final JMenuItem newFile, openFile, saveFile, close, cut, copy, paste, clearFile, selectAll, quickFind,
             aboutMe, aboutSoftware, wordWrap;
     private final JToolBar mainToolbar;
-    JButton newButton, openButton, saveButton, clearButton, quickButton, aboutMeButton, aboutButton, closeButton, boldButton, italicButton;
+    JButton newButton, openButton, saveButton, clearButton, quickButton, aboutMeButton, aboutButton, closeButton, boldButton, italicButton, 
+    		indentButton, unindentButton;
     private final Action selectAllAction;
 
     //setup icons - Bold and Italic
@@ -100,6 +101,10 @@ public class UI extends JFrame implements ActionListener {
     // setup icons - Help Menu
     private final ImageIcon aboutMeIcon = new ImageIcon(UI.class.getResource("icons/about_me.png"));
     private final ImageIcon aboutIcon = new ImageIcon(UI.class.getResource("icons/about.png"));
+    
+    // setup icons - Indentation Buttons
+    private final ImageIcon indentIcon = new ImageIcon(UI.class.getResource("icons/indent.png"));
+    private final ImageIcon unindentIcon = new ImageIcon(UI.class.getResource("icons/unindent.png"));
 
     private SupportedKeywords kw = new SupportedKeywords();
     private HighlightText languageHighlighter = new HighlightText(Color.YELLOW);
@@ -392,6 +397,19 @@ public class UI extends JFrame implements ActionListener {
         italicButton.addActionListener(this);
         mainToolbar.add(italicButton);
         mainToolbar.addSeparator();
+        
+        //Initialization of Indentation Buttons
+        indentButton = new JButton(indentIcon);
+        indentButton.setToolTipText("Move Text Right");
+        indentButton.addActionListener(this);
+        mainToolbar.add(indentButton);
+        mainToolbar.addSeparator();
+        
+        unindentButton = new JButton(unindentIcon);
+        unindentButton.setToolTipText("Move Text Left");
+        unindentButton.addActionListener(this);
+        mainToolbar.add(unindentButton);
+        mainToolbar.addSeparator();
         /**
          * **************** FONT SETTINGS SECTION **********************
          */
@@ -445,7 +463,8 @@ public class UI extends JFrame implements ActionListener {
         });
         //FONT SIZE SETTINGS SECTION END
     }
-
+    
+   
     @Override
     protected void processWindowEvent(WindowEvent e) {
         if (e.getID() == WindowEvent.WINDOW_CLOSING) {
@@ -464,6 +483,51 @@ public class UI extends JFrame implements ActionListener {
             }
         }
     }
+    
+    /*
+     * Method Indents text by shifting selected block
+     */
+    public void indentText() {
+    	int front = textArea.getSelectionStart();
+    	int back = textArea.getSelectionEnd();
+    	
+    	if (front != back) {
+    		String selected = textArea.getText().substring(front,back);
+    		String indented = "\t" + selected.replace("\n", "\n\t");
+    		textArea.replaceRange(indented, front, back);
+    	}
+    	
+    }
+
+    /*
+     * Undoes previous indentation from selected text block
+     */
+    public void unindentText() {
+    	int front = textArea.getSelectionStart();
+    	int back = textArea.getSelectionEnd();
+    	
+    	if (front != back) {
+    		String selected = textArea.getText().substring(front,back);
+    		StringBuilder unindented = new StringBuilder();
+    		
+    		String[] lines = selected.split("\n");
+    		for (int i = 0; i < lines.length; i++) {
+    			String line = lines[i];
+    			if (line.startsWith("\t")) {
+    				unindented.append(line.substring(1));
+    			}else if (line.startsWith("    ")){
+    				unindented.append(line.substring(4));
+    			}else {
+    				unindented.append(line);
+    			}
+    			if (i < lines.length - 1) {
+    				unindented.append("\n");
+    			}
+    		}
+    		textArea.replaceRange(unindented.toString(), front, back);
+    	}
+    }
+    
     
     private void highlightKeywords() {
         SwingUtilities.invokeLater(() -> {
@@ -597,6 +661,10 @@ public class UI extends JFrame implements ActionListener {
             } else {
                 textArea.setFont(textArea.getFont().deriveFont(Font.ITALIC));
             }
+        } else if (e.getSource() == indentButton) {
+        	indentText();
+        }else if (e.getSource() == unindentButton) {
+        	unindentText();
         }
         // Clear File (Code)
         if (e.getSource() == clearFile || e.getSource() == clearButton) {
